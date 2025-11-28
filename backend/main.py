@@ -1,18 +1,17 @@
-from fastapi import FastAPI
-from fastapi.middleware.cors import CORSMiddleware
+# main.py — только верх + один маршрут (остальное по аналогии)
+from fastapi import FastAPI, Depends
+from database import SessionLocal
+from models import Product
 
 app = FastAPI()
 
-origins = [
-    "http://localhost:3000",
-    "http://127.0.0.1:5173",
-    "https://your-production-domain.com",
-]
+def get_db():
+    db = SessionLocal()
+    try:
+        yield db
+    finally:
+        db.close()
 
-app.add_middleware(
-    CORSMiddleware,
-    allow_origins=origins,      # или ["*"] для всех
-    allow_credentials=True,
-    allow_methods=["*"],
-    allow_headers=["*"],
-)
+@app.get("/api/products")
+def get_products(db=Depends(get_db)):
+    return db.query(Product).all()

@@ -1,5 +1,4 @@
-import React, { useState, useEffect } from 'react'
-import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom'
+import { BrowserRouter, Routes, Route } from 'react-router-dom'
 
 import './App.css'
 
@@ -11,14 +10,7 @@ import PersonalSection from './components/PersonalSection/personalSection'
 import NavigationOverlay from './components/Navigates/Navigate'
 import About from './components/about/about'
 
-import { api } from './api'
-
 function App() {
-  const [data, setData] = useState<string>("")
-
-  useEffect(() => {
-    api.getHello().then(res => setData(res.message))
-  }, [])
 
   return (
     <>

@@ -1,48 +1,10 @@
-import { createContext, useContext, useEffect, useMemo, useState, type ReactNode } from "react";
+import { useEffect, useMemo, useState, type ReactNode } from "react";
 
-type ShopActionsContextValue = {
-  wishlist: number[];
-  cart: number[];
-  addToWishlist: (productId: number) => void;
-  removeFromWishlist: (productId: number) => void;
-  toggleWishlist: (productId: number) => void;
-  addToCart: (productId: number) => void;
-  removeFromCart: (productId: number) => void;
-  isWishlisted: (productId: number) => boolean;
-  isInCart: (productId: number) => boolean;
-};
-
-const WISHLIST_KEY = "cloudmarket_wishlist";
-const CART_KEY = "cloudmarket_cart";
-
-const ShopActionsContext = createContext<ShopActionsContextValue | null>(null);
-
-function readStoredIds(key: string): number[] {
-  try {
-    const raw = localStorage.getItem(key);
-    if (!raw) {
-      return [];
-    }
-
-    const parsed = JSON.parse(raw) as unknown;
-    if (!Array.isArray(parsed)) {
-      return [];
-    }
-
-    return parsed.filter((item): item is number => typeof item === "number");
-  } catch {
-    return [];
-  }
-}
+import { CART_KEY, readStoredIds, ShopActionsContext, type ShopActionsContextValue, WISHLIST_KEY } from "./shopActions";
 
 export function ShopActionsProvider({ children }: { children: ReactNode }) {
-  const [wishlist, setWishlist] = useState<number[]>([]);
-  const [cart, setCart] = useState<number[]>([]);
-
-  useEffect(() => {
-    setWishlist(readStoredIds(WISHLIST_KEY));
-    setCart(readStoredIds(CART_KEY));
-  }, []);
+  const [wishlist, setWishlist] = useState<number[]>(() => readStoredIds(WISHLIST_KEY));
+  const [cart, setCart] = useState<number[]>(() => readStoredIds(CART_KEY));
 
   useEffect(() => {
     localStorage.setItem(WISHLIST_KEY, JSON.stringify(wishlist));
@@ -89,12 +51,4 @@ export function ShopActionsProvider({ children }: { children: ReactNode }) {
   );
 
   return <ShopActionsContext.Provider value={value}>{children}</ShopActionsContext.Provider>;
-}
-
-export function useShopActions() {
-  const context = useContext(ShopActionsContext);
-  if (!context) {
-    throw new Error("useShopActions must be used within ShopActionsProvider");
-  }
-  return context;
 }

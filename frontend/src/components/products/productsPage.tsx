@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useState } from "react";
 import Card from "../shop/cards/card";
 import { useCatalogProducts } from "../../hooks/useCatalog";
 import "./productsPage.css";
@@ -10,18 +10,16 @@ export default function ProductsPage() {
   const [query, setQuery] = useState("");
   const { products, loading, error } = useCatalogProducts();
 
-  const filteredProducts = useMemo(() => {
-    return products.filter((product) => {
-      const matchesFilter = activeFilter === "All" || product.category === activeFilter;
-      const term = query.trim().toLowerCase();
-      const matchesQuery =
-        term.length === 0 ||
-        product.title.toLowerCase().includes(term) ||
-        product.subtitle.toLowerCase().includes(term);
+  const term = query.trim().toLowerCase();
+  const filteredProducts = products.filter((product) => {
+    const matchesFilter = activeFilter === "All" || product.category === activeFilter;
+    const matchesQuery =
+      term.length === 0 ||
+      product.title.toLowerCase().includes(term) ||
+      product.subtitle.toLowerCase().includes(term);
 
-      return matchesFilter && matchesQuery;
-    });
-  }, [activeFilter, query]);
+    return matchesFilter && matchesQuery;
+  });
 
   return (
     <main className="products-page">

@@ -4,10 +4,24 @@ import { api, clearAuth, getStoredUser, type AuthUser } from "../../api";
 import { products } from "../../data/store";
 import "./personalSection.css";
 
+function getStoredWishlistCount(): number {
+  try {
+    const raw = localStorage.getItem("cloudmarket_wishlist");
+    if (!raw) {
+      return 0;
+    }
+
+    const parsed = JSON.parse(raw) as unknown;
+    return Array.isArray(parsed) ? parsed.length : 0;
+  } catch {
+    return 0;
+  }
+}
+
 export default function PersonalSection() {
   const [user, setUser] = useState<AuthUser | null>(getStoredUser());
   const [error, setError] = useState("");
-  const [wishlistCount, setWishlistCount] = useState(0);
+  const [wishlistCount] = useState(getStoredWishlistCount);
 
   useEffect(() => {
     async function loadUser() {
@@ -22,21 +36,6 @@ export default function PersonalSection() {
     }
 
     void loadUser();
-  }, []);
-
-  useEffect(() => {
-    try {
-      const raw = localStorage.getItem("cloudmarket_wishlist");
-      if (!raw) {
-        setWishlistCount(0);
-        return;
-      }
-
-      const parsed = JSON.parse(raw) as unknown;
-      setWishlistCount(Array.isArray(parsed) ? parsed.length : 0);
-    } catch {
-      setWishlistCount(0);
-    }
   }, []);
 
   function handleLogout() {

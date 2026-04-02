@@ -1,6 +1,6 @@
 import { Link, useParams } from "react-router-dom";
 
-import { useShopActions } from "../../context/ShopActionsContext";
+import { useShopActions } from "../../context/useShopActions";
 import { products as fallbackProducts } from "../../data/store";
 import { useCatalogProduct, useCatalogProducts } from "../../hooks/useCatalog";
 import Card from "../shop/cards/card";

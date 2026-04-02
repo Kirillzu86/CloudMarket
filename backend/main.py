@@ -1,5 +1,5 @@
-# main.py — только верх + один маршрут (остальное по аналогии)
 from collections.abc import Generator
+import os
 
 from fastapi import Depends, FastAPI, Header, HTTPException, Query, status
 from fastapi.middleware.cors import CORSMiddleware
@@ -12,12 +12,20 @@ from schemas import AuthResponse, ProductRead, UserCreate, UserLogin, UserRead
 
 app = FastAPI(title="CloudMarket API")
 
-app.add_middleware(
-    CORSMiddleware,
-    allow_origins=[
+
+def get_allowed_origins() -> list[str]:
+    raw_origins = os.getenv("CLOUDMARKET_ALLOWED_ORIGINS")
+    if raw_origins:
+        return [origin.strip() for origin in raw_origins.split(",") if origin.strip()]
+    return [
         "http://localhost:5173",
         "http://127.0.0.1:5173",
-    ],
+    ]
+
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=get_allowed_origins(),
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -84,7 +92,7 @@ def get_product(slug: str, db: Session = Depends(get_db)) -> ProductRead:
 
 @app.get("/api/health")
 def healthcheck() -> dict[str, str]:
-    return {"status": "ok"}
+    return {"status": "ok", "database_url": "configured"}
 
 
 @app.post("/api/auth/register", response_model=AuthResponse, status_code=status.HTTP_201_CREATED)

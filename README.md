@@ -1,46 +1,62 @@
 # CloudMarket
 
-Local storefront project with:
+Storefront monorepo:
 - `frontend`: React + Vite
-- `backend`: FastAPI + SQLAlchemy + SQLite
+- `backend`: FastAPI + SQLAlchemy
 
-## Run Backend
+## Local Run
+
+Backend:
 
 ```powershell
 cd backend
-.\venv\Scripts\activate
-uvicorn main:app --reload --port 8000
+python -m venv .venv
+.venv\Scripts\activate
+pip install -r requirements.txt
+uvicorn main:app --reload --host 0.0.0.0 --port 8000
 ```
 
-Backend automatically:
-- creates SQLite tables
-- seeds demo products on first run
-- exposes `GET /api/products`
-- exposes `GET /api/products/{slug}`
-- exposes `GET /api/health`
-- stores SQLite data in your system temp folder under `cloudmarket/shop.db`
-
-## Run Frontend
+Frontend:
 
 ```powershell
 cd frontend
 npm install
-npm run dev
-```
-
-Frontend default API base URL:
-- `http://localhost:8000`
-
-Optional override:
-
-```powershell
 $env:VITE_API_BASE_URL="http://localhost:8000"
 npm run dev
 ```
 
-## Production Build
+## Production Notes
 
-```powershell
-cd frontend
-npm run build
-```
+- Backend seeds demo products automatically on first startup.
+- Default SQLite path is `backend/data/shop.db`.
+- You can override storage with `DATABASE_URL` or `CLOUDMARKET_DATA_DIR`.
+- Frontend defaults to same-origin API calls, so in production it works well behind a reverse proxy.
+
+## Coolify Deployment
+
+Create two services from this repository.
+
+Backend service:
+- Build context: `/backend`
+- Dockerfile: `Dockerfile`
+- Port: `8000`
+- Persistent storage: mount a volume to `/app/data`
+- Required env:
+  `CLOUDMARKET_JWT_SECRET=replace-with-a-long-random-secret`
+  `CLOUDMARKET_ALLOWED_ORIGINS=https://your-frontend-domain`
+
+Frontend service:
+- Build context: `/frontend`
+- Dockerfile: `Dockerfile`
+- Port: `80`
+
+If both services are in the same Coolify network, the frontend container already proxies `/api/*` to `http://backend:8000`.
+
+## API Endpoints
+
+- `GET /api/products`
+- `GET /api/products/{slug}`
+- `GET /api/health`
+- `POST /api/auth/register`
+- `POST /api/auth/login`
+- `GET /api/auth/me`

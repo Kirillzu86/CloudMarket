@@ -1,4 +1,4 @@
-import { useShopActions } from "../../../context/ShopActionsContext";
+import { useShopActions } from "../../../context/useShopActions";
 import { products as fallbackProducts } from "../../../data/store";
 import { useCatalogProducts } from "../../../hooks/useCatalog";
 import "./cart.css";

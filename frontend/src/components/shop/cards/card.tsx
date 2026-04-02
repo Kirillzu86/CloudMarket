@@ -1,5 +1,5 @@
 import { Link } from "react-router-dom";
-import { useShopActions } from "../../../context/ShopActionsContext";
+import { useShopActions } from "../../../context/useShopActions";
 import type { Product } from "../../../data/store";
 import "./card.css";
 

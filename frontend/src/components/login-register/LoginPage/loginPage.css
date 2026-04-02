@@ -1,0 +1,19 @@
+.auth-page-shell {
+  padding: 72px 24px 96px;
+}
+
+.auth-card--enhanced {
+  padding: 36px;
+  background: #fff;
+  border-radius: 28px;
+  box-shadow: 0 18px 40px rgba(22, 24, 29, 0.08);
+}
+
+.input-container {
+  position: relative;
+}
+
+.auth-error {
+  color: #ef4343;
+  font-size: 14px;
+}

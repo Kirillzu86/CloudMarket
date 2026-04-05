@@ -1,6 +1,6 @@
 import { BrowserRouter, Route, Routes } from "react-router-dom";
 
-import "../../base.css";
+import "./base.css";
 import "./App.css";
 
 import { ShopActionsProvider } from "./context/ShopActionsContext";

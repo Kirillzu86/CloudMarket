@@ -24,11 +24,11 @@ export default function About() {
             <h2>Premium materials</h2>
             <p>Dense knits, structured cottons, and durable finishing that stays sharp after repeat wear.</p>
           </article>
-          <article className="about-value-card about-value-card--accent">
+          <article className="about-value-card">
             <h2>Seasonal color</h2>
             <p>Neutral foundations paired with amber, cobalt, charcoal, and crisp ivory drops.</p>
           </article>
-          <article className="about-value-card about-value-card--dark">
+          <article className="about-value-card">
             <h2>Designed for city pace</h2>
             <p>Easy layering, practical silhouettes, and fast delivery for people always in motion.</p>
           </article>

@@ -70,17 +70,7 @@ export default function Shop() {
 
           <div className="category-grid">
             {categories.map((category) => (
-              <Link
-                key={category.name}
-                to="/products"
-                className={`category-card${
-                  category.theme === "blue"
-                    ? " category-card--blue"
-                    : category.theme === "dark"
-                    ? " category-card--dark"
-                    : ""
-                }`}
-              >
+              <Link key={category.name} to="/products" className="category-card">
                 <span className="category-chip">{category.name}</span>
                 <div>
                   <h3 className="category-card-title">{category.name}</h3>
@@ -95,20 +85,31 @@ export default function Shop() {
       <section className="featured-section section">
         <div className="site-shell">
           {error ? <p className="catalog-status">Using local catalog fallback.</p> : null}
-          <div className="section-heading-row">
-            <div>
-              <p className="section-label">Amber Glow</p>
-              <h2>Featured products</h2>
+          <div className="featured-panel">
+            <div className="section-heading-row featured-panel__header">
+              <div>
+                <p className="section-label">Оплата на сайте</p>
+                <h2>Все покупки в одной спокойной палитре</h2>
+                <p className="featured-panel__text">
+                  Надежная оплата, единый стиль карточек и чистая подача товаров без лишних цветовых акцентов.
+                </p>
+              </div>
+              <div className="filter-pills">
+                <span className="payment-chip">Visa / Mastercard</span>
+                <span className="payment-chip">Безопасный checkout</span>
+                <span className="payment-chip">Быстрое оформление</span>
+              </div>
             </div>
-            <div className="filter-pills">
+
+            <div className="filter-pills featured-panel__filters">
               <button type="button" className="filter-btn active">All</button>
               <button type="button" className="filter-btn">Women</button>
               <button type="button" className="filter-btn">Men</button>
               <button type="button" className="filter-btn">New In</button>
             </div>
-          </div>
 
-          <Card items={featuredProducts} />
+            <Card items={featuredProducts} />
+          </div>
         </div>
       </section>
 

@@ -1,4 +1,4 @@
-import { useState } from "react";
+ï»¿import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 
 import { api, saveAuth } from "../../../api";
@@ -79,7 +79,7 @@ export default function RegisterPage() {
                 id="password"
                 className="form-input"
                 type="password"
-                placeholder="••••••••"
+                placeholder="Password"
                 value={password}
                 onChange={(event) => setPassword(event.target.value)}
                 required

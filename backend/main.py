@@ -1,14 +1,32 @@
 from collections.abc import Generator
 import os
+from pathlib import Path
 
-from fastapi import Depends, FastAPI, Header, HTTPException, Query, status
+
+def load_local_env() -> None:
+    env_path = Path(__file__).resolve().parent / ".env"
+    if not env_path.exists():
+        return
+
+    for line in env_path.read_text(encoding="utf-8").splitlines():
+        clean_line = line.strip()
+        if not clean_line or clean_line.startswith("#") or "=" not in clean_line:
+            continue
+        key, value = clean_line.split("=", 1)
+        os.environ.setdefault(key.strip(), value.strip().strip('"').strip("'"))
+
+
+load_local_env()
+
+from fastapi import Depends, FastAPI, Header, HTTPException, Query, Request, status
 from fastapi.middleware.cors import CORSMiddleware
 from sqlalchemy.orm import Session
 
 import crud
 from auth import decode_access_token
 from database import SessionLocal, create_tables
-from schemas import AuthResponse, ProductRead, UserCreate, UserLogin, UserRead
+from payments import YooKassaConfigError, YooKassaRequestError, get_yookassa_payment
+from schemas import AuthResponse, OrderRead, PaymentCreate, PaymentCreateResponse, ProductRead, UserCreate, UserLogin, UserRead
 
 app = FastAPI(title="CloudMarket API")
 
@@ -114,3 +132,52 @@ def login(payload: UserLogin, db: Session = Depends(get_db)) -> AuthResponse:
 @app.get("/api/auth/me", response_model=UserRead)
 def me(current_user: UserRead = Depends(get_current_user)) -> UserRead:
     return current_user
+
+
+@app.post("/api/payments", response_model=PaymentCreateResponse, status_code=status.HTTP_201_CREATED)
+def create_payment(
+    payload: PaymentCreate,
+    current_user: UserRead = Depends(get_current_user),
+    db: Session = Depends(get_db),
+) -> PaymentCreateResponse:
+    try:
+        return crud.create_payment_for_products(db, current_user.id, payload.product_ids)
+    except YooKassaConfigError as exc:
+        db.rollback()
+        raise HTTPException(status_code=status.HTTP_503_SERVICE_UNAVAILABLE, detail=str(exc)) from exc
+    except YooKassaRequestError as exc:
+        db.rollback()
+        raise HTTPException(status_code=status.HTTP_502_BAD_GATEWAY, detail=str(exc)) from exc
+    except ValueError as exc:
+        db.rollback()
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(exc)) from exc
+
+
+@app.get("/api/orders/{order_id}", response_model=OrderRead)
+def get_order(
+    order_id: int,
+    current_user: UserRead = Depends(get_current_user),
+    db: Session = Depends(get_db),
+) -> OrderRead:
+    order = crud.get_order_by_id(db, order_id, current_user.id)
+    if order is None:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Order not found")
+    return crud.serialize_order(order)
+
+
+@app.post("/api/payments/yookassa/webhook")
+async def yookassa_webhook(request: Request, db: Session = Depends(get_db)) -> dict[str, str]:
+    payload = await request.json()
+    payment_id = payload.get("object", {}).get("id")
+    if not payment_id:
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Missing payment id")
+
+    try:
+        payment = get_yookassa_payment(payment_id)
+    except YooKassaConfigError as exc:
+        raise HTTPException(status_code=status.HTTP_503_SERVICE_UNAVAILABLE, detail=str(exc)) from exc
+    except YooKassaRequestError as exc:
+        raise HTTPException(status_code=status.HTTP_502_BAD_GATEWAY, detail=str(exc)) from exc
+
+    crud.apply_payment_status(db, payment)
+    return {"status": "ok"}

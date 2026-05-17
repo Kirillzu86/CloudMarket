@@ -44,6 +44,15 @@ Backend service:
 - Required env:
   `CLOUDMARKET_JWT_SECRET=replace-with-a-long-random-secret`
   `CLOUDMARKET_ALLOWED_ORIGINS=https://your-frontend-domain`
+  `FRONTEND_BASE_URL=https://your-frontend-domain`
+  `YOOKASSA_SHOP_ID=your-yookassa-shop-id`
+  `YOOKASSA_SECRET_KEY=your-yookassa-secret-key`
+
+YooKassa webhook URL:
+
+```text
+https://your-frontend-domain/api/payments/yookassa/webhook
+```
 
 Frontend service:
 - Build context: `/frontend`
@@ -60,3 +69,6 @@ If both services are in the same Coolify network, the frontend container already
 - `POST /api/auth/register`
 - `POST /api/auth/login`
 - `GET /api/auth/me`
+- `POST /api/payments`
+- `POST /api/payments/yookassa/webhook`
+- `GET /api/orders/{order_id}`

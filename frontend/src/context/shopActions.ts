@@ -8,6 +8,7 @@ export type ShopActionsContextValue = {
   toggleWishlist: (productId: number) => void;
   addToCart: (productId: number) => void;
   removeFromCart: (productId: number) => void;
+  clearCart: () => void;
   isWishlisted: (productId: number) => boolean;
   isInCart: (productId: number) => boolean;
 };

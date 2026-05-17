@@ -43,3 +43,33 @@ class AuthResponse(BaseModel):
     access_token: str
     token_type: str = "bearer"
     user: UserRead
+
+
+class PaymentCreate(BaseModel):
+    product_ids: list[int]
+
+
+class PaymentCreateResponse(BaseModel):
+    order_id: int
+    payment_id: str
+    status: str
+    confirmation_url: str
+    total_amount: float
+    currency: str
+
+
+class OrderItemRead(BaseModel):
+    product_id: int
+    title: str
+    quantity: int
+    unit_price: float
+
+
+class OrderRead(BaseModel):
+    id: int
+    status: str
+    total_amount: float
+    currency: str
+    payment_id: str | None
+    confirmation_url: str | None
+    items: list[OrderItemRead]

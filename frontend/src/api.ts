@@ -33,6 +33,30 @@ export type AuthPayload = {
   user: AuthUser;
 };
 
+export type PaymentCreateResponse = {
+  order_id: number;
+  payment_id: string;
+  status: string;
+  confirmation_url: string;
+  total_amount: number;
+  currency: string;
+};
+
+export type Order = {
+  id: number;
+  status: string;
+  total_amount: number;
+  currency: string;
+  payment_id: string | null;
+  confirmation_url: string | null;
+  items: {
+    product_id: number;
+    title: string;
+    quantity: number;
+    unit_price: number;
+  }[];
+};
+
 function mapApiProduct(product: ApiProduct): Product {
   return {
     id: product.id,
@@ -135,5 +159,16 @@ export const api = {
 
   getCurrentUser: async (): Promise<AuthUser> => {
     return request<AuthUser>("/api/auth/me");
+  },
+
+  createPayment: async (productIds: number[]): Promise<PaymentCreateResponse> => {
+    return request<PaymentCreateResponse>("/api/payments", {
+      method: "POST",
+      body: JSON.stringify({ product_ids: productIds }),
+    });
+  },
+
+  getOrder: async (orderId: number): Promise<Order> => {
+    return request<Order>(`/api/orders/${orderId}`);
   },
 };

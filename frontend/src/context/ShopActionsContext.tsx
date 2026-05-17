@@ -44,6 +44,9 @@ export function ShopActionsProvider({ children }: { children: ReactNode }) {
           return next;
         });
       },
+      clearCart: () => {
+        setCart([]);
+      },
       isWishlisted: (productId) => wishlist.includes(productId),
       isInCart: (productId) => cart.includes(productId),
     }),

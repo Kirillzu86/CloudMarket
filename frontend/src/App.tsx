@@ -12,6 +12,7 @@ import About from "./components/about/about";
 import SiteFooter from "./components/layout/SiteFooter";
 import LoginPage from "./components/login-register/LoginPage/loginPage";
 import RegisterPage from "./components/login-register/RegisterPage/regPage";
+import PaymentSuccess from "./components/payment/paymentSuccess";
 import ProductDetailsPage from "./components/productDetail/productDetail";
 import ProductsPage from "./components/products/productsPage";
 import Shop from "./components/shop/shop";
@@ -29,6 +30,7 @@ function App() {
             <Route path="/login" element={<LoginPage />} />
             <Route path="/register" element={<RegisterPage />} />
             <Route path="/cart" element={<Cart />} />
+            <Route path="/payment/success" element={<PaymentSuccess />} />
             <Route path="/personalsection" element={<PersonalSection />} />
             <Route path="/about" element={<About />} />
             <Route path="/wishlist" element={<Wishlist />} />

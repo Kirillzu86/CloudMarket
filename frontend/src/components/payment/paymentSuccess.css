@@ -1,0 +1,53 @@
+.payment-page {
+  display: flex;
+  flex-direction: column;
+}
+
+.payment-section {
+  padding: 64px 0 84px;
+}
+
+.payment-layout {
+  display: flex;
+  justify-content: center;
+}
+
+.payment-panel {
+  width: min(100%, 620px);
+  background: #fff;
+  border-radius: 20px;
+  padding: 32px;
+  box-shadow: 0 12px 32px rgba(22, 24, 29, 0.06);
+}
+
+.payment-panel h1 {
+  margin-bottom: 14px;
+}
+
+.payment-panel p {
+  color: #676f7e;
+}
+
+.payment-error {
+  color: #a13b2c;
+}
+
+.payment-status {
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 16px 0;
+  border-top: 1px solid rgba(22, 24, 29, 0.08);
+  color: #676f7e;
+}
+
+.payment-status strong {
+  color: #16181d;
+}
+
+.payment-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-top: 18px;
+}

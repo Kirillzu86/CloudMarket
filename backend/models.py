@@ -17,6 +17,8 @@ class User(Base):
     is_active: Mapped[bool] = mapped_column(Boolean, default=True)
     created_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow)
 
+    orders: Mapped[list["Order"]] = relationship(back_populates="user")
+
 # Товары
 class Product(Base):
     __tablename__ = "products"
@@ -33,6 +35,7 @@ class Product(Base):
     sizes: Mapped[list["ProductSize"]] = relationship(back_populates="product")
     images: Mapped[list["ProductImage"]] = relationship(back_populates="product")
     category: Mapped["Category"] = relationship(back_populates="products")
+    order_items: Mapped[list["OrderItem"]] = relationship(back_populates="product")
 
 # Категории (куртки, футболки и т.д.)
 class Category(Base):
@@ -59,3 +62,33 @@ class ProductImage(Base):
     url: Mapped[str] = mapped_column(String(500))
     
     product: Mapped["Product"] = relationship(back_populates="images")
+
+
+class Order(Base):
+    __tablename__ = "orders"
+
+    id: Mapped[int] = mapped_column(primary_key=True)
+    user_id: Mapped[int] = mapped_column(ForeignKey("users.id"), index=True)
+    status: Mapped[str] = mapped_column(String(40), default="pending", index=True)
+    total_amount: Mapped[Numeric] = mapped_column(Numeric(10, 2))
+    currency: Mapped[str] = mapped_column(String(3), default="RUB")
+    yookassa_payment_id: Mapped[str | None] = mapped_column(String(120), unique=True, nullable=True, index=True)
+    confirmation_url: Mapped[str | None] = mapped_column(String(1000), nullable=True)
+    created_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow)
+    paid_at: Mapped[datetime | None] = mapped_column(DateTime, nullable=True)
+
+    user: Mapped["User"] = relationship(back_populates="orders")
+    items: Mapped[list["OrderItem"]] = relationship(back_populates="order")
+
+
+class OrderItem(Base):
+    __tablename__ = "order_items"
+
+    id: Mapped[int] = mapped_column(primary_key=True)
+    order_id: Mapped[int] = mapped_column(ForeignKey("orders.id"), index=True)
+    product_id: Mapped[int] = mapped_column(ForeignKey("products.id"), index=True)
+    quantity: Mapped[int] = mapped_column(Integer, default=1)
+    unit_price: Mapped[Numeric] = mapped_column(Numeric(10, 2))
+
+    order: Mapped["Order"] = relationship(back_populates="items")
+    product: Mapped["Product"] = relationship(back_populates="order_items")
